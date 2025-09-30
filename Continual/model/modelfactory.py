@@ -76,8 +76,7 @@ class ModelFactory():
                     ('bn2', [channels]),
                     ('conv3', [channels, channels, 3, 3, 1, 0]),
                     ('bn3', [channels]),
-                    ('fc', [1000, size_of_representation // 2]),
-                    ('linear', [size_of_representation // 2, size_of_representation])
+                    ('fc', [1000, size_of_representation]),
 
                 ]
             elif model_type == "OML":
@@ -95,9 +94,9 @@ class ModelFactory():
                     ('bn5_nm', [nm_channels]),
                     ('conv6_nm', [nm_channels, nm_channels, 3, 3, 1, 0]),
                     ('bn6_nm', [nm_channels]),
-                    ('nm_to_fc', [size_of_interpreter // 2, size_of_interpreter]),
+                    ('nm_to_fc', [size_of_interpreter, size_of_interpreter]),
                     # =============== fast weight =======================
-                    ('fc', [1000, size_of_interpreter // 2]),
+                    ('fc', [1000, size_of_interpreter]),
                 ]
         elif dataset == "cifar100":
             nm_channels = 112
@@ -167,8 +166,7 @@ class ModelFactory():
                     ('bn2', [channels]),
                     ('conv3', [channels, channels, 3, 3, 1, 0]),
                     ('bn3', [channels]),
-                    ('fc', [100, size_of_representation // 4]),
-                    ('linear', [size_of_representation // 4, size_of_representation]),
+                    ('fc', [100, size_of_representation]),
                 ]
             elif model_type == "OML":
                 return [
@@ -185,10 +183,10 @@ class ModelFactory():
                     ('bn5_nm', [nm_channels]),
                     ('conv6_nm', [nm_channels, nm_channels, 3, 3, 1, 0]),
                     ('bn6_nm', [nm_channels]),
-                    ('nm_to_fc', [size_of_interpreter // 2, size_of_interpreter]),
+                    ('nm_to_fc', [size_of_interpreter, size_of_interpreter]),
                     # =============== fast weight =======================
-                    ('fc', [100, size_of_interpreter // 2]),
-                    # [input_size, hidden_size, num_units, input_key_size, input_value_size, input_query_size]
+                    ('fc', [100, size_of_interpreter ]),
+
                 ]
         elif dataset == "imagenet":
             nm_channels = 112
@@ -258,8 +256,7 @@ class ModelFactory():
                     ('bn2', [channels]),
                     ('conv3', [channels, channels, 3, 3, 1, 0]),
                     ('bn3', [channels]),
-                    ('fc', [84, size_of_representation // 16]),
-                    ('linear', [size_of_representation // 16, size_of_representation]),
+                    ('fc', [84, size_of_representation]),
 
                 ]
             elif model_type == "OML":
@@ -277,9 +274,9 @@ class ModelFactory():
                     ('bn5_nm', [nm_channels]),
                     ('conv6_nm', [nm_channels, nm_channels, 3, 3, 1, 0]),
                     ('bn6_nm', [nm_channels]),
-                    ('nm_to_fc', [size_of_interpreter // 2, size_of_interpreter]),
+                    ('nm_to_fc', [size_of_interpreter, size_of_interpreter]),
                     # =============== fast weight =======================
-                    ('fc', [84, size_of_interpreter // 2]),
+                    ('fc', [84, size_of_interpreter]),
 
                     # [input_size, hidden_size, num_units, input_key_size, input_value_size, input_query_size]
                 ]
