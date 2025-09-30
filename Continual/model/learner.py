@@ -273,8 +273,6 @@ class Learner(nn.Module):
                 data = maxpool(data, kernel_size=2, stride=2)
             data = data.view(data.size(0), -1)
             data = data*fc_mask
-            w,b = vars[28], vars[29]
-            data = F.linear(data, w, b)
             w,b = vars[26], vars[27]
             data = F.linear(data, w, b)
 
@@ -411,7 +409,10 @@ class Learner(nn.Module):
             data = F.batch_norm(data, running_mean, running_var, weight=w, bias=b, training=bn_training)
             data = F.relu(data)
             data = avgpool(data, kernel_size=2, stride=2)
+
             data = data.view(data.size(0), -1)
+            w,b = vars[24], vars[25]
+            data = F.relu(F.linear(data, w, b))
 
             # =========== PREDICTION NETWORK ===========
 
