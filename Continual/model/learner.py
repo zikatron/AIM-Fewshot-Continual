@@ -218,8 +218,68 @@ class Learner(nn.Module):
                 data = F.normalize(data, p=2, dim=data.dim() - 1, eps=1e-12)
             w,b = vars[26], vars[27]
             data = F.linear(data, w, b)
-        else:
+
+        if self.treatment == 'ANML':
             # =========== NEUROMODULATORY NETWORK ===========
+            data = x
+            nm_data = x
+            w,b = vars[0], vars[1]
+            nm_data = conv2d(nm_data, w, b, 1)
+            w,b = vars[2], vars[3]
+            running_mean, running_var = self.vars_bn[0], self.vars_bn[1]
+            nm_data = F.batch_norm(nm_data, running_mean, running_var, weight=w, bias=b, training=bn_training)
+            nm_data = F.relu(nm_data)
+            nm_data = maxpool(nm_data, kernel_size=2, stride=2)
+            w,b = vars[4], vars[5]
+            nm_data = conv2d(nm_data, w, b, 1)
+            w,b = vars[6], vars[7]
+            running_mean, running_var = self.vars_bn[2], self.vars_bn[3]
+            nm_data = F.batch_norm(nm_data, running_mean, running_var, weight=w, bias=b, training=bn_training)
+            nm_data = F.relu(nm_data)
+            nm_data = maxpool(nm_data, kernel_size=2, stride=2)
+            w,b = vars[8], vars[9]
+            nm_data = conv2d(nm_data, w, b, 1)
+            w,b = vars[10], vars[11]
+            running_mean, running_var = self.vars_bn[4], self.vars_bn[5]
+            nm_data = F.batch_norm(nm_data, running_mean, running_var, weight=w, bias=b, training=bn_training)
+            nm_data = F.relu(nm_data)
+            if dataset == 'imagenet':
+                nm_data = maxpool(nm_data, kernel_size=2, stride=2)
+            nm_data = nm_data.view(nm_data.size(0), -1)
+            w,b = vars[12], vars[13]
+            fc_mask = F.sigmoid(F.linear(nm_data, w, b)).view(nm_data.size(0), -1)
+            # =========== PREDICTION NETWORK ===========
+            w,b = vars[14], vars[15]
+            data = conv2d(data, w, b, 1)
+            w,b = vars[16], vars[17]
+            running_mean, running_var = self.vars_bn[6], self.vars_bn[7]
+            data = F.batch_norm(data, running_mean, running_var, weight=w, bias=b, training=bn_training)
+            data = F.relu(data)
+            data = maxpool(data, kernel_size=2, stride=2)
+            w,b = vars[18], vars[19]
+            data = conv2d(data, w, b, 1)
+            w,b = vars[20], vars[21]
+            running_mean, running_var = self.vars_bn[8], self.vars_bn[9]
+            data = F.batch_norm(data, running_mean, running_var, weight=w, bias=b, training=bn_training)
+            data = F.relu(data)
+            data = maxpool(data, kernel_size=2, stride=2)
+            w,b = vars[22], vars[23]
+            data = conv2d(data, w, b, 1)
+            w,b, = vars[24], vars[25]
+            running_mean, running_var = self.vars_bn[10], self.vars_bn[11]
+            data = F.batch_norm(data, running_mean, running_var, weight=w, bias=b, training=bn_training)
+            data = F.relu(data)
+            if dataset == 'imagenet':
+                data = maxpool(data, kernel_size=2, stride=2)
+            data = data.view(data.size(0), -1)
+            data = data*fc_mask
+            w,b = vars[28], vars[29]
+            data = F.linear(data, w, b)
+            w,b = vars[26], vars[27]
+            data = F.linear(data, w, b)
+
+        elif self.treatment == "OML+AIM":
+            # =========== RLN NETWORK ===========
             data = x
 
             w,b = vars[0], vars[1]
@@ -294,7 +354,70 @@ class Learner(nn.Module):
 
             w, b = vars[26], vars[27]
             data = F.linear(data, w, b)
-            
+
+        elif self.treatment == "OML":
+            # =========== RLN NETWORK ===========
+            data = x
+
+            w,b = vars[0], vars[1]
+            data = conv2d(data, w, b, 1, 1)
+            w,b = vars[2], vars[3]
+            running_mean, running_var = self.vars_bn[0], self.vars_bn[1]
+            data = F.batch_norm(data, running_mean, running_var, weight=w, bias=b, training=bn_training)
+            data = F.relu(data)
+            if dataset == 'imagenet':
+                data = maxpool(data, kernel_size=2, stride=2)
+
+            w,b = vars[4], vars[5]
+            data = conv2d(data, w, b, 1, 1)
+            w,b = vars[6], vars[7]
+            running_mean, running_var = self.vars_bn[2], self.vars_bn[3]
+            data = F.batch_norm(data, running_mean, running_var, weight=w, bias=b, training=bn_training)
+            data = F.relu(data)
+            if dataset != 'imagenet':
+                data = maxpool(data, kernel_size=2, stride=2)
+
+            w,b = vars[8], vars[9]
+            data = conv2d(data, w, b, 1, 1)
+            w,b = vars[10], vars[11]
+            running_mean, running_var = self.vars_bn[4], self.vars_bn[5]
+            data = F.batch_norm(data, running_mean, running_var, weight=w, bias=b, training=bn_training)
+            data = F.relu(data)
+            if dataset == 'imagenet':
+                data = maxpool(data, kernel_size=2, stride=2)
+
+            w,b = vars[12], vars[13]
+            data = conv2d(data, w, b, 1, 1)
+            w,b = vars[14], vars[15]
+            running_mean, running_var = self.vars_bn[6], self.vars_bn[7]
+            data = F.batch_norm(data, running_mean, running_var, weight=w, bias=b, training=bn_training)
+            data = F.relu(data)
+            if dataset != 'imagenet':
+                data = maxpool(data, kernel_size=2, stride=2)
+
+            w,b = vars[16], vars[17]
+            data = conv2d(data, w, b, 1, 1)
+            w,b = vars[18], vars[19]
+            running_mean, running_var = self.vars_bn[8], self.vars_bn[9]
+            data = F.batch_norm(data, running_mean, running_var, weight=w, bias=b, training=bn_training)
+            data = F.relu(data)
+            if dataset == 'imagenet':
+                data = maxpool(data, kernel_size=2, stride=2)
+
+            w,b = vars[20], vars[21]
+            data = conv2d(data, w, b, 1, 1)
+            w,b = vars[22], vars[23]
+            running_mean, running_var = self.vars_bn[10], self.vars_bn[11]
+            data = F.batch_norm(data, running_mean, running_var, weight=w, bias=b, training=bn_training)
+            data = F.relu(data)
+            data = avgpool(data, kernel_size=2, stride=2)
+            data = data.view(data.size(0), -1)
+
+            # =========== PREDICTION NETWORK ===========
+
+            w, b = vars[26], vars[27]
+            data = F.linear(data, w, b)
+
         if return_aim:
             return data, logits, chosen
         else:
