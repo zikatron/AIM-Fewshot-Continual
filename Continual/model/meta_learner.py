@@ -87,7 +87,7 @@ class MetaLearingClassification(nn.Module):
                 if i == self.update_step:
                     break
 
-        x_rand, y_rand = iter(d_rand_iterator).next()
+        x_rand, y_rand = next(iter(d_rand_iterator))
         for it in d_traj_iterators:
             i = 0
             for batch_idx, (data, targets) in enumerate(it):

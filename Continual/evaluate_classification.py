@@ -77,7 +77,7 @@ def main(args):
                 for lr in lr_list:
 
                     print(lr)
-                    maml = torch.load(args.model, map_location='cpu')
+                    maml = torch.load(args.model, map_location='cpu', weights_only=False)
                     maml.treatment = args.treatment
 
                     if args.scratch:
@@ -201,7 +201,19 @@ def main(args):
             print("Temp Results = %s" % str(results_mem_size))
             print("LR RESULTS = ", temp_result)
 
-        best_lr = float(stats.mode(lr_all)[0][0])
+        # Handle different versions of scipy.stats.mode
+        try:
+            # For newer scipy versions (1.9.0+)
+            mode_result = stats.mode(lr_all)
+            best_lr = float(mode_result.mode)
+        except:
+            try:
+                # For older scipy versions
+                best_lr = float(stats.mode(lr_all)[0][0])
+            except:
+                # Fallback: just pick the first learning rate
+                best_lr = lr_all[0]
+                
         print("BEST LR %s= " % str(best_lr))
 
         for aoo in range(args.runs):
@@ -227,7 +239,7 @@ def main(args):
 
                 lr = best_lr
 
-                maml = torch.load(args.model, map_location='cpu')
+                maml = torch.load(args.model, map_location='cpu', weights_only=False)
                 maml.treatment = args.treatment
 
                 if args.scratch:

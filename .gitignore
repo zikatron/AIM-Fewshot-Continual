@@ -1,0 +1,5 @@
+# Ignore data folder
+/data/
+
+# Ignore meta_cl_methods virtual environment
+/meta_cl_methods/
