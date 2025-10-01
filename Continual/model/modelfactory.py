@@ -82,15 +82,15 @@ class ModelFactory():
             elif model_type == "OML":
                 return [
                     # =============== slow weight =======================
-                    ('conv1_nm', [nm_channels, 3, 3, 3, 1, 0]),
-                    ('conv2_nm', [nm_channels, nm_channels, 3, 3, 1, 0]),
-                    ('conv3_nm', [nm_channels, nm_channels, 3, 3, 1, 0]),
-                    ('conv4_nm', [nm_channels, nm_channels, 3, 3, 1, 0]),
-                    ('conv5_nm', [nm_channels, nm_channels, 3, 3, 1, 0]),
-                    ('conv6_nm', [nm_channels, nm_channels, 3, 3, 1, 0]),
+                    ('conv1', [channels, 3, 3, 3, 1, 0]),
+                    ('conv2', [channels, channels, 3, 3, 1, 0]),
+                    ('conv3', [channels, channels, 3, 3, 1, 0]),
+                    ('conv4', [channels, channels, 3, 3, 1, 0]),
+                    ('conv5', [channels, channels, 3, 3, 1, 0]),
+                    ('conv6', [channels, channels, 3, 3, 1, 0]),
                     # =============== fast weight =======================
-                    ('nm_to_fc', [size_of_interpreter, size_of_interpreter]),
-                    ('fc', [1000, size_of_interpreter]),
+                    ('nm_to_fc', [1024, size_of_representation]), # following ANML exactly
+                    ('fc', [1000, 1024]),
                 ]
         elif dataset == "cifar100":
             nm_channels = 112
@@ -165,15 +165,15 @@ class ModelFactory():
             elif model_type == "OML":
                 return [
                     # =============== slow weight =======================
-                    ('conv1_nm', [nm_channels, 3, 3, 3, 1, 0]),
-                    ('conv2_nm', [nm_channels, nm_channels, 3, 3, 1, 0]),
-                    ('conv3_nm', [nm_channels, nm_channels, 3, 3, 1, 0]),
-                    ('conv4_nm', [nm_channels, nm_channels, 3, 3, 1, 0]),
-                    ('conv5_nm', [nm_channels, nm_channels, 3, 3, 1, 0]),
-                    ('conv6_nm', [nm_channels, nm_channels, 3, 3, 1, 0]),
+                    ('conv1', [nm_channels, 3, 3, 3, 1, 0]),
+                    ('conv2', [nm_channels, nm_channels, 3, 3, 1, 0]),
+                    ('conv3', [nm_channels, nm_channels, 3, 3, 1, 0]),
+                    ('conv4', [nm_channels, nm_channels, 3, 3, 1, 0]),
+                    ('conv5', [nm_channels, nm_channels, 3, 3, 1, 0]),
+                    ('conv6', [nm_channels, nm_channels, 3, 3, 1, 0]),
                     # =============== fast weight =======================
-                    ('nm_to_fc', [size_of_interpreter, size_of_interpreter]),
-                    ('fc', [100, size_of_interpreter ]),
+                    ('nm_to_fc', [1024, size_of_representation]), # 1024 a dummy number
+                    ('fc', [100, 1024]),
 
                 ]
         elif dataset == "imagenet":
@@ -250,15 +250,15 @@ class ModelFactory():
             elif model_type == "OML":
                 return [
                     # =============== slow weight =======================
-                    ('conv1_nm', [nm_channels, 3, 3, 3, 1, 0]),
-                    ('conv2_nm', [nm_channels, nm_channels, 3, 3, 1, 0]),
-                    ('conv3_nm', [nm_channels, nm_channels, 3, 3, 1, 0]),
-                    ('conv4_nm', [nm_channels, nm_channels, 3, 3, 1, 0]),
-                    ('conv5_nm', [nm_channels, nm_channels, 3, 3, 1, 0]),
-                    ('conv6_nm', [nm_channels, nm_channels, 3, 3, 1, 0]),
+                    ('conv1', [channels, 3, 3, 3, 1, 0]),
+                    ('conv2', [channels, channels, 3, 3, 1, 0]),
+                    ('conv3', [channels, channels, 3, 3, 1, 0]),
+                    ('conv4', [channels, channels, 3, 3, 1, 0]),
+                    ('conv5', [channels, channels, 3, 3, 1, 0]),
+                    ('conv6', [channels, channels, 3, 3, 1, 0]),
                     # =============== fast weight =======================
-                    ('nm_to_fc', [size_of_interpreter, size_of_interpreter]),
-                    ('fc', [84, size_of_interpreter]),
+                    ('nm_to_fc', [1024, size_of_representation]), # 1024 a dummy number
+                    ('fc', [84, 1024]),
 
                     # [input_size, hidden_size, num_units, input_key_size, input_value_size, input_query_size]
                 ]
