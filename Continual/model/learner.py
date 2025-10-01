@@ -354,7 +354,6 @@ class Learner(nn.Module):
             data = F.linear(data, w, b)
 
         elif self.treatment == "OML":
-            print("hi")
             # =========== RLN NETWORK ===========
             data = x
 
