@@ -354,43 +354,44 @@ class Learner(nn.Module):
             data = F.linear(data, w, b)
 
         elif self.treatment == "OML":
+            print("hi")
             # =========== RLN NETWORK ===========
             data = x
 
             w,b = vars[0], vars[1]
             data = conv2d(data, w, b, 1, 1)
             data = F.relu(data)
-            if dataset == 'imagenet':
-                data = maxpool(data, kernel_size=2, stride=2)
+            # if dataset == 'imagenet':
+            #     data = maxpool(data, kernel_size=2, stride=2)
 
             w,b = vars[2], vars[3]
             data = conv2d(data, w, b, 1, 1)
             data = F.relu(data)
-            if dataset != 'imagenet':
-                data = maxpool(data, kernel_size=2, stride=2)
+            # if dataset != 'imagenet':
+            #     data = maxpool(data, kernel_size=2, stride=2)
 
             w,b = vars[4], vars[5]
             data = conv2d(data, w, b, 1, 1)
             data = F.relu(data)
-            if dataset == 'imagenet':
-                data = maxpool(data, kernel_size=2, stride=2)
+            # if dataset == 'imagenet':
+            #     data = maxpool(data, kernel_size=2, stride=2)
 
             w,b = vars[6], vars[7]
             data = conv2d(data, w, b, 1, 1)
             data = F.relu(data)
-            if dataset != 'imagenet':
-                data = maxpool(data, kernel_size=2, stride=2)
+            # if dataset != 'imagenet':
+            #     data = maxpool(data, kernel_size=2, stride=2)
 
             w,b = vars[8], vars[9]
             data = conv2d(data, w, b, 1, 1)
             data = F.relu(data)
-            if dataset == 'imagenet':
-                data = maxpool(data, kernel_size=2, stride=2)
+            # if dataset == 'imagenet':
+            #     data = maxpool(data, kernel_size=2, stride=2)
 
             w,b = vars[10], vars[11]
             data = conv2d(data, w, b, 1, 1)
             data = F.relu(data)
-            data = avgpool(data, kernel_size=2, stride=2)
+            # data = avgpool(data, kernel_size=2, stride=2)
 
             data = data.view(data.size(0), -1)
 
