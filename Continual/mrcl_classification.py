@@ -82,8 +82,8 @@ if __name__ == '__main__':
     argparser.add_argument('--saved_model', help='Saved model to load', default='my_model.net')
     argparser.add_argument('--seed', type=int, help='Seed for random', default=9)
     argparser.add_argument('--tasks', type=int, help='meta batch size, namely task num', default=1)
-    argparser.add_argument('--meta_lr', type=float, help='meta-level outer learning rate', default=1e-3)
-    argparser.add_argument('--update_lr', type=float, help='task-level inner update learning rate', default=1e-2)
+    argparser.add_argument('--meta_lr', type=float, help='meta-level outer learning rate', default=1e-3) # 1e-2 from ANML
+    argparser.add_argument('--update_lr', type=float, help='task-level inner update learning rate', default=1e-2) # 0.01 from ANML
     argparser.add_argument('--update_step', type=int, help='task-level inner update steps', default=20)
     argparser.add_argument('--dataset', help='Name of experiment', default="omniglot")
     argparser.add_argument("--no-reset", action="store_true")

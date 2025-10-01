@@ -83,19 +83,13 @@ class ModelFactory():
                 return [
                     # =============== slow weight =======================
                     ('conv1_nm', [nm_channels, 3, 3, 3, 1, 0]),
-                    ('bn1_nm', [nm_channels]),
                     ('conv2_nm', [nm_channels, nm_channels, 3, 3, 1, 0]),
-                    ('bn2_nm', [nm_channels]),
                     ('conv3_nm', [nm_channels, nm_channels, 3, 3, 1, 0]),
-                    ('bn3_nm', [nm_channels]),
                     ('conv4_nm', [nm_channels, nm_channels, 3, 3, 1, 0]),
-                    ('bn4_nm', [nm_channels]),
                     ('conv5_nm', [nm_channels, nm_channels, 3, 3, 1, 0]),
-                    ('bn5_nm', [nm_channels]),
                     ('conv6_nm', [nm_channels, nm_channels, 3, 3, 1, 0]),
-                    ('bn6_nm', [nm_channels]),
-                    ('nm_to_fc', [size_of_interpreter, size_of_interpreter]),
                     # =============== fast weight =======================
+                    ('nm_to_fc', [size_of_interpreter, size_of_interpreter]),
                     ('fc', [1000, size_of_interpreter]),
                 ]
         elif dataset == "cifar100":
@@ -172,19 +166,13 @@ class ModelFactory():
                 return [
                     # =============== slow weight =======================
                     ('conv1_nm', [nm_channels, 3, 3, 3, 1, 0]),
-                    ('bn1_nm', [nm_channels]),
                     ('conv2_nm', [nm_channels, nm_channels, 3, 3, 1, 0]),
-                    ('bn2_nm', [nm_channels]),
                     ('conv3_nm', [nm_channels, nm_channels, 3, 3, 1, 0]),
-                    ('bn3_nm', [nm_channels]),
                     ('conv4_nm', [nm_channels, nm_channels, 3, 3, 1, 0]),
-                    ('bn4_nm', [nm_channels]),
                     ('conv5_nm', [nm_channels, nm_channels, 3, 3, 1, 0]),
-                    ('bn5_nm', [nm_channels]),
                     ('conv6_nm', [nm_channels, nm_channels, 3, 3, 1, 0]),
-                    ('bn6_nm', [nm_channels]),
-                    ('nm_to_fc', [size_of_interpreter, size_of_interpreter]),
                     # =============== fast weight =======================
+                    ('nm_to_fc', [size_of_interpreter, size_of_interpreter]),
                     ('fc', [100, size_of_interpreter ]),
 
                 ]
@@ -263,19 +251,13 @@ class ModelFactory():
                 return [
                     # =============== slow weight =======================
                     ('conv1_nm', [nm_channels, 3, 3, 3, 1, 0]),
-                    ('bn1_nm', [nm_channels]),
                     ('conv2_nm', [nm_channels, nm_channels, 3, 3, 1, 0]),
-                    ('bn2_nm', [nm_channels]),
                     ('conv3_nm', [nm_channels, nm_channels, 3, 3, 1, 0]),
-                    ('bn3_nm', [nm_channels]),
                     ('conv4_nm', [nm_channels, nm_channels, 3, 3, 1, 0]),
-                    ('bn4_nm', [nm_channels]),
                     ('conv5_nm', [nm_channels, nm_channels, 3, 3, 1, 0]),
-                    ('bn5_nm', [nm_channels]),
                     ('conv6_nm', [nm_channels, nm_channels, 3, 3, 1, 0]),
-                    ('bn6_nm', [nm_channels]),
-                    ('nm_to_fc', [size_of_interpreter, size_of_interpreter]),
                     # =============== fast weight =======================
+                    ('nm_to_fc', [size_of_interpreter, size_of_interpreter]),
                     ('fc', [84, size_of_interpreter]),
 
                     # [input_size, hidden_size, num_units, input_key_size, input_value_size, input_query_size]
