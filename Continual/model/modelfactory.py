@@ -85,9 +85,9 @@ class ModelFactory():
                     ('conv1', [channels, 3, 3, 3, 1, 0]),
                     ('conv2', [channels, channels, 3, 3, 1, 0]),
                     ('conv3', [channels, channels, 3, 3, 1, 0]),
-                    ('conv4', [channels, channels, 3, 3, 1, 0]),
+                    ('conv4', [channels, channels, 3, 3, 2, 0]),
                     ('conv5', [channels, channels, 3, 3, 1, 0]),
-                    ('conv6', [channels, channels, 3, 3, 1, 0]),
+                    ('conv6', [channels, channels, 3, 3, 2, 0]),
                     # =============== fast weight =======================
                     ('nm_to_fc', [1024, size_of_representation]), # following ANML exactly
                     ('fc', [1000, 1024]),
