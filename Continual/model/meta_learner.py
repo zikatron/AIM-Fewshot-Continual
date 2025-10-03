@@ -34,7 +34,7 @@ class MetaLearingClassification(nn.Module):
 
     def reset_classifer(self, class_to_reset):
         if self.treatment == "OML":
-            weight = self.net.parameters()[14]
+            weight = self.net.parameters()[-2]
         else:
             weight = self.net.parameters()[26]
         #torch.nn.init.kaiming_normal_(weight[class_to_reset].unsqueeze(0))
@@ -47,7 +47,7 @@ class MetaLearingClassification(nn.Module):
             fast_weights = self.net.parameters()
 
         loss = F.cross_entropy(logits, y)
-        grad = torch.autograd.grad(loss, fast_weights, allow_unused=True)
+        grad = torch.autograd.grad(loss, fast_weights, allow_unused=False) # changed the allow_unused to False
 
         if isinstance(self.update_lr, list):
             fast_weights = list(map(lambda p: p[1] - p[2] * p[0] if p[1].learn and p[0] is not None else p[1], zip(grad, fast_weights, self.update_lr)))
