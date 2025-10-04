@@ -37,8 +37,8 @@ class MetaLearingClassification(nn.Module):
             weight = self.net.parameters()[-2]
         else:
             weight = self.net.parameters()[26]
-        #torch.nn.init.kaiming_normal_(weight[class_to_reset].unsqueeze(0))
-        torch.nn.init.normal_(weight[class_to_reset].unsqueeze(0))
+        torch.nn.init.kaiming_normal_(weight[class_to_reset].unsqueeze(0))
+        # torch.nn.init.normal_(weight[class_to_reset].unsqueeze(0))
 
     def inner_update(self, x, fast_weights, y, bn_training):
         logits = self.net(x, fast_weights, bn_training=bn_training, meta_train=True, iterations=1)
