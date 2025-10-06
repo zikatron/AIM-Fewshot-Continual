@@ -22,7 +22,7 @@ def init_wandb(config, name, tags=None, group=None, notes=None):
     """
     return wandb.init(
         entity="bytefuse",
-        project="ICLRMetaCL",
+        project="pushing-the-limits-of-continual-learning",
         config=config,
         name=name,
         tags=tags,
