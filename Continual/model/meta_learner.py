@@ -33,11 +33,13 @@ class MetaLearingClassification(nn.Module):
         self.layers_to_fix = []
 
     def reset_classifer(self, class_to_reset):
-        if self.treatment == "OML":
+        if self.treatment == "OML" or self.treatment == "ANML":
             weight = self.net.parameters()[-2]
+            torch.nn.init.kaiming_normal_(weight[class_to_reset].unsqueeze(0))
         else:
             weight = self.net.parameters()[26]
-        torch.nn.init.kaiming_normal_(weight[class_to_reset].unsqueeze(0))
+            torch.nn.init.normal_(weight[class_to_reset].unsqueeze(0))
+        # torch.nn.init.kaiming_normal_(weight[class_to_reset].unsqueeze(0))
         # torch.nn.init.normal_(weight[class_to_reset].unsqueeze(0))
 
     def inner_update(self, x, fast_weights, y, bn_training):
