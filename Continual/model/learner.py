@@ -219,58 +219,61 @@ class Learner(nn.Module):
             w,b = vars[26], vars[27]
             data = F.linear(data, w, b)
 
-        elif self.treatment == 'ANML':
+        elif self.treatment == 'ANML-second-order':
             # =========== NEUROMODULATORY NETWORK ===========
             data = x
             nm_data = x
+
             w,b = vars[0], vars[1]
-            nm_data = conv2d(nm_data, w, b, 1)
+            nm_data = conv2d(nm_data, w, b)
             w,b = vars[2], vars[3]
             running_mean, running_var = self.vars_bn[0], self.vars_bn[1]
-            nm_data = F.batch_norm(nm_data, running_mean, running_var, weight=w, bias=b, training=bn_training)
+            nm_data = F.batch_norm(nm_data, running_mean, running_var, weight=w, bias=b, training=False)
             nm_data = F.relu(nm_data)
             nm_data = maxpool(nm_data, kernel_size=2, stride=2)
+
             w,b = vars[4], vars[5]
-            nm_data = conv2d(nm_data, w, b, 1)
+            nm_data = conv2d(nm_data, w, b)
             w,b = vars[6], vars[7]
             running_mean, running_var = self.vars_bn[2], self.vars_bn[3]
-            nm_data = F.batch_norm(nm_data, running_mean, running_var, weight=w, bias=b, training=bn_training)
+            nm_data = F.batch_norm(nm_data, running_mean, running_var, weight=w, bias=b, training=False)
             nm_data = F.relu(nm_data)
             nm_data = maxpool(nm_data, kernel_size=2, stride=2)
+
             w,b = vars[8], vars[9]
-            nm_data = conv2d(nm_data, w, b, 1)
+            nm_data = conv2d(nm_data, w, b)
             w,b = vars[10], vars[11]
             running_mean, running_var = self.vars_bn[4], self.vars_bn[5]
-            nm_data = F.batch_norm(nm_data, running_mean, running_var, weight=w, bias=b, training=bn_training)
+            nm_data = F.batch_norm(nm_data, running_mean, running_var, weight=w, bias=b, training=False)
             nm_data = F.relu(nm_data)
-            if dataset == 'imagenet':
-                nm_data = maxpool(nm_data, kernel_size=2, stride=2)
+
             nm_data = nm_data.view(nm_data.size(0), -1)
             w,b = vars[12], vars[13]
             fc_mask = F.sigmoid(F.linear(nm_data, w, b)).view(nm_data.size(0), -1)
+
             # =========== PREDICTION NETWORK ===========
+
             w,b = vars[14], vars[15]
-            data = conv2d(data, w, b, 1)
+            data = conv2d(data, w, b)
             w,b = vars[16], vars[17]
             running_mean, running_var = self.vars_bn[6], self.vars_bn[7]
-            data = F.batch_norm(data, running_mean, running_var, weight=w, bias=b, training=bn_training)
+            data = F.batch_norm(data, running_mean, running_var, weight=w, bias=b, training=False)
             data = F.relu(data)
             data = maxpool(data, kernel_size=2, stride=2)
             w,b = vars[18], vars[19]
-            data = conv2d(data, w, b, 1)
+            data = conv2d(data, w, b)
             w,b = vars[20], vars[21]
             running_mean, running_var = self.vars_bn[8], self.vars_bn[9]
-            data = F.batch_norm(data, running_mean, running_var, weight=w, bias=b, training=bn_training)
+            data = F.batch_norm(data, running_mean, running_var, weight=w, bias=b, training=False)
             data = F.relu(data)
             data = maxpool(data, kernel_size=2, stride=2)
             w,b = vars[22], vars[23]
-            data = conv2d(data, w, b, 1)
+            data = conv2d(data, w, b)
             w,b, = vars[24], vars[25]
             running_mean, running_var = self.vars_bn[10], self.vars_bn[11]
-            data = F.batch_norm(data, running_mean, running_var, weight=w, bias=b, training=bn_training)
+            data = F.batch_norm(data, running_mean, running_var, weight=w, bias=b, training=False)
             data = F.relu(data)
-            if dataset == 'imagenet':
-                data = maxpool(data, kernel_size=2, stride=2)
+
             data = data.view(data.size(0), -1)
             data = data*fc_mask
             w,b = vars[26], vars[27]
@@ -353,7 +356,7 @@ class Learner(nn.Module):
             w, b = vars[26], vars[27]
             data = F.linear(data, w, b)
 
-        elif self.treatment == "OML":
+        elif self.treatment == "OML-second-order":
             # =========== RLN NETWORK ===========
             data = x
 
@@ -393,11 +396,16 @@ class Learner(nn.Module):
             # data = avgpool(data, kernel_size=2, stride=2)
 
             data = data.view(data.size(0), -1)
-
-            # =========== PREDICTION NETWORK (PLN) ===========
-
             w,b = vars[12], vars[13]
             data = F.relu(F.linear(data, w, b))
+
+            # =========== PREDICTION NETWORK (PLN) ===========
+        
+            # w, b = vars[12], vars[13]
+            # data = F.linear(data, w, b)
+
+            # w,b = vars[12], vars[13]
+            # data = F.relu(F.linear(data, w, b))
             w, b = vars[14], vars[15]
             data = F.linear(data, w, b)
 

@@ -55,7 +55,7 @@ class ModelFactory():
                     ('aim', [size_of_interpreter // 2, 128, 64, 128, size_of_interpreter // 2, 128]),
                     # [input_size, hidden_size, num_units, input_key_size, input_value_size, input_query_size]
                 ]
-            elif model_type == "ANML":
+            elif model_type == "ANML-second-order":
                 nm_channels = 112
                 channels = 256
                 size_of_representation = 2304
@@ -79,7 +79,7 @@ class ModelFactory():
                     ('fc', [1000, size_of_representation]),
 
                 ]
-            elif model_type == "OML":
+            elif model_type == "OML-second-order":
                 return [
                     # =============== slow weight =======================
                     ('conv1', [channels, 3, 3, 3, 1, 0]),
@@ -88,8 +88,8 @@ class ModelFactory():
                     ('conv4', [channels, channels, 3, 3, 2, 0]),
                     ('conv5', [channels, channels, 3, 3, 1, 0]),
                     ('conv6', [channels, channels, 3, 3, 2, 0]),
-                    # =============== fast weight =======================
                     ('nm_to_fc', [1024, size_of_representation]), # following ANML exactly
+                    # =============== fast weight =======================
                     ('fc', [1000, 1024]),
                 ]
         elif dataset == "cifar100":
@@ -141,7 +141,7 @@ class ModelFactory():
                     ('aim', [size_of_interpreter // 2, 128, 64, 128, size_of_interpreter // 2, 128]),
                     # [input_size, hidden_size, num_units, input_key_size, input_value_size, input_query_size]
                 ]
-            elif model_type == "ANML":
+            elif model_type == "ANML-second-order":
                 size_of_representation = 4096
                 size_of_interpreter = 1792
                 return [
@@ -162,7 +162,7 @@ class ModelFactory():
                     ('bn3', [channels]),
                     ('fc', [100, size_of_representation]),
                 ]
-            elif model_type == "OML":
+            elif model_type == "OML-second-order":
                 return [
                     # =============== slow weight =======================
                     ('conv1', [nm_channels, 3, 3, 3, 1, 0]),
@@ -225,7 +225,7 @@ class ModelFactory():
                     ('aim', [size_of_interpreter // 2, 128, 32, 128, size_of_interpreter // 2, 128]),
                     # [input_size, hidden_size, num_units, input_key_size, input_value_size, input_query_size]
                 ]
-            elif model_type == "ANML":
+            elif model_type == "ANML-second-order":
                 size_of_representation = 16384
                 size_of_interpreter = 7168
                 return [
@@ -247,7 +247,7 @@ class ModelFactory():
                     ('fc', [84, size_of_representation]),
 
                 ]
-            elif model_type == "OML":
+            elif model_type == "OML-second-order":
                 return [
                     # =============== slow weight =======================
                     ('conv1', [channels, 3, 3, 3, 1, 0]),

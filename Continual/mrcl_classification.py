@@ -42,6 +42,9 @@ def setup_csv_logger(args):
     return csv_file, csv_writer, csv_filename
 
 def main(args):
+    
+    os.environ['WANDB_API_KEY'] = 'af68f61230db91e3ba854d69c29437700c715fc4'
+
     utils.set_seed(args.seed)
 
     if args.dataset == 'omniglot':
@@ -105,7 +108,7 @@ def main(args):
         d_traj_iterators = []
         for t in t1:
             d_traj_iterators.append(sampler.sample_task([t]))
-            maml.reset_classifer(t) #just commiting this out for now and to see if this is why it is matching
+            maml.reset_classifer(t)
 
         d_rand_iterator = sampler.get_complete_iterator()
         accs, loss = maml(d_traj_iterators, d_rand_iterator)

@@ -140,9 +140,11 @@ def main(args):
                                 param.data = w
                                 param.learn = True
 
-                    if args.treatment == 'OML':
-                        weights2reset = ["vars_14"]
-                        #biases2reset = ["vars_15"]
+                    if args.treatment == 'OML-second-order':
+                        weight = maml.parameters()[-2]
+                        torch.nn.init.kaiming_normal_(weight)
+                        weight = maml.parameters()[-1]
+                        torch.nn.init.zeros_(weight)
                     else:
                         weight = maml.parameters()[26]
                         torch.nn.init.kaiming_normal_(weight)
@@ -300,9 +302,11 @@ def main(args):
                             param.data = w
                             param.learn = True
 
-                if args.treatment == "OML":
-                    weights2reset = ["vars_14"]
-                    #biases2reset = ["vars_15"]
+                if args.treatment == "OML-second-order":
+                        weight = maml.parameters()[-2]
+                        torch.nn.init.kaiming_normal_(weight)
+                        weight = maml.parameters()[-1]
+                        torch.nn.init.zeros_(weight)
                 else:
                     weight = maml.parameters()[26]
                     torch.nn.init.kaiming_normal_(weight)
@@ -461,7 +465,7 @@ if __name__ == '__main__':
     argparser = argparse.ArgumentParser()
     argparser.add_argument('--epoch', type=int, help='epoch number', default=1)
     argparser.add_argument('--seed', type=int, help='epoch number', default=444)
-    argparser.add_argument('--schedule', type=int, nargs='+', default=[15,30],
+    argparser.add_argument('--schedule', type=int, nargs='+', default=[650],
                         help='Decrease learning rate at these epochs.')
     argparser.add_argument('--memory', type=int, help='epoch number', default=0)
     argparser.add_argument('--model', type=str, help='epoch number', default="Neuromodulation_cifar100.net")
