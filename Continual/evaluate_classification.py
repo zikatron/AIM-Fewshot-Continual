@@ -3,8 +3,12 @@ import logging
 import random
 import pickle
 import math
+import csv
+import os
 
 import numpy as np
+import wandb
+from utils.wandb_logger import init_wandb, finish_wandb
 import torch
 import torch.nn as nn
 import torch.backends.cudnn as cudnn
@@ -20,11 +24,43 @@ from model.aim import blocked_grad
 import utils
 from experiment.experiment import experiment
 
+def setup_csv_logger(args):
+    """Set up CSV file for logging evaluation results."""
+    # Create output directory if it doesn't exist
+    os.makedirs('results', exist_ok=True)
+    
+    # Create a detailed filename that includes relevant parameters
+    csv_filename = f"results/{args.dataset}_{args.treatment}_{'test' if args.test else 'train'}_epoch{args.epoch}_seed{args.seed}.csv"
+    
+    # Open the CSV file in write mode
+    csv_file = open(csv_filename, 'w', newline='')
+    csv_writer = csv.writer(csv_file)
+    
+    # Write headers
+    headers = [
+        'num_classes', 
+        'best_lr',
+        'avg_accuracy',
+        'std_accuracy'
+    ]
+    csv_writer.writerow(headers)
+    
+    print(f"Logging results to: {csv_filename}")
+    return csv_file, csv_writer
+
 def main(args):
     torch.manual_seed(args.seed)
     torch.cuda.manual_seed_all(args.seed)
     np.random.seed(args.seed)
     random.seed(args.seed)
+
+    # Set up CSV logging
+    csv_file, csv_writer = setup_csv_logger(args)
+    
+    # Initialize W&B logging
+    run_name = f"{args.dataset}_{args.treatment}_{'test' if args.test else 'train'}_epoch{args.epoch}_seed{args.seed}"
+    config_wandb = vars(args)
+    init_wandb(config=config_wandb, name=run_name)
 
     total_clases = 10
 
@@ -77,7 +113,7 @@ def main(args):
                 for lr in lr_list:
 
                     print(lr)
-                    maml = torch.load(args.model, map_location='cpu')
+                    maml = torch.load(args.model, map_location='cpu', weights_only=False)
                     maml.treatment = args.treatment
 
                     if args.scratch:
@@ -104,9 +140,11 @@ def main(args):
                                 param.data = w
                                 param.learn = True
 
-                    if args.treatment == 'OML':
-                        weights2reset = ["vars_14"]
-                        #biases2reset = ["vars_15"]
+                    if args.treatment == 'OML-second-order':
+                        weight = maml.parameters()[-2]
+                        torch.nn.init.kaiming_normal_(weight)
+                        weight = maml.parameters()[-1]
+                        torch.nn.init.zeros_(weight)
                     else:
                         weight = maml.parameters()[26]
                         torch.nn.init.kaiming_normal_(weight)
@@ -201,7 +239,19 @@ def main(args):
             print("Temp Results = %s" % str(results_mem_size))
             print("LR RESULTS = ", temp_result)
 
-        best_lr = float(stats.mode(lr_all)[0][0])
+        # Handle different versions of scipy.stats.mode
+        try:
+            # For newer scipy versions (1.9.0+)
+            mode_result = stats.mode(lr_all)
+            best_lr = float(mode_result.mode)
+        except:
+            try:
+                # For older scipy versions
+                best_lr = float(stats.mode(lr_all)[0][0])
+            except:
+                # Fallback: just pick the first learning rate
+                best_lr = lr_all[0]
+                
         print("BEST LR %s= " % str(best_lr))
 
         for aoo in range(args.runs):
@@ -227,7 +277,7 @@ def main(args):
 
                 lr = best_lr
 
-                maml = torch.load(args.model, map_location='cpu')
+                maml = torch.load(args.model, map_location='cpu', weights_only=False)
                 maml.treatment = args.treatment
 
                 if args.scratch:
@@ -252,9 +302,11 @@ def main(args):
                             param.data = w
                             param.learn = True
 
-                if args.treatment == "OML":
-                    weights2reset = ["vars_14"]
-                    #biases2reset = ["vars_15"]
+                if args.treatment == "OML-second-order":
+                        weight = maml.parameters()[-2]
+                        torch.nn.init.kaiming_normal_(weight)
+                        weight = maml.parameters()[-1]
+                        torch.nn.init.zeros_(weight)
                 else:
                     weight = maml.parameters()[26]
                     torch.nn.init.kaiming_normal_(weight)
@@ -359,13 +411,61 @@ def main(args):
             print("A=  ", results_mem_size)
             print("Final results = %s", str(results_mem_size))
             print("FINAL RESULTS = ", final_results_all)
+    
+    # Process and log the results for each class count
+    for tot_class in args.schedule:
+        # Extract accuracies for this specific class count
+        class_results = [r[1][args.memory][0] for r in final_results_all if r[0] == tot_class]
+        
+        if class_results:
+            avg_accuracy = np.mean(class_results)
+            std_accuracy = np.std(class_results)
+            
+            # Find the corresponding best learning rate from the results
+            best_lr_entries = [r for r in final_results_all if r[0] == tot_class]
+            if best_lr_entries:
+                best_lr = best_lr_entries[0][1][args.memory][1]  # Get the LR from the first result
+            else:
+                best_lr = 0.0
+                
+            # Log to CSV
+            csv_writer.writerow([
+                tot_class,
+                best_lr,
+                avg_accuracy,
+                std_accuracy
+            ])
+            
+            # Log to W&B - this allows plotting accuracy vs class count
+            wandb.log({
+                "num_classes": tot_class,
+                "best_lr": best_lr,
+                "avg_accuracy": avg_accuracy,
+                "std_accuracy": std_accuracy
+            })
+            
+            print(f"Class count: {tot_class}, Best LR: {best_lr}, Avg Accuracy: {avg_accuracy:.4f}, Std: {std_accuracy:.4f}")
+    
+    # Close the CSV file
+    csv_file.close()
+    
+    # Create a summary table in W&B with all results
+    summary_data = [[c, lr, acc, std] for c, lr, acc, std in 
+                   [(r[0], r[1][args.memory][1], r[1][args.memory][0], 0.0) for r in final_results_all]]
+    summary_table = wandb.Table(data=summary_data, columns=["num_classes", "best_lr", "avg_accuracy", "std_accuracy"])
+    wandb.log({"results_summary": summary_table})
+    
+    # Finish W&B run
+    finish_wandb()
+    
+    print(f"Results have been saved to the CSV file and logged to W&B.")
 
 
 if __name__ == '__main__':
     argparser = argparse.ArgumentParser()
     argparser.add_argument('--epoch', type=int, help='epoch number', default=1)
     argparser.add_argument('--seed', type=int, help='epoch number', default=444)
-    argparser.add_argument('--schedule', type=int, nargs='+', default=[15,30],
+    argparser.add_argument('--schedule', type=int, nargs='+', default=[650],
                         help='Decrease learning rate at these epochs.')
     argparser.add_argument('--memory', type=int, help='epoch number', default=0)
     argparser.add_argument('--model', type=str, help='epoch number', default="Neuromodulation_cifar100.net")

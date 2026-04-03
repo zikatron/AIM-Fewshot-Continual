@@ -133,7 +133,9 @@ def log_accuracy(maml, iterator_test, device, step):
             logits_q = logits_q.squeeze(-1)
             pred_q = F.softmax(logits_q, dim=1).argmax(dim=1)
             correct += torch.eq(pred_q, target).sum().item() / len(img)
-    print("Test Accuracy = %s" % str(correct / len(iterator_test)))
+    accuracy = correct / len(iterator_test)
+    print("Test Accuracy = %s" % str(accuracy))
+    return accuracy
 
 
 def iterator_sorter(trainset, no_sort=True, random=True, pairs=False, classes=10):

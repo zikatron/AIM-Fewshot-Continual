@@ -33,12 +33,14 @@ class MetaLearingClassification(nn.Module):
         self.layers_to_fix = []
 
     def reset_classifer(self, class_to_reset):
-        if self.treatment == 'OML':
-            weight = self.net.parameters()[14]
+        if self.treatment == "OML-second-order" or self.treatment == "ANML-second-order":
+            weight = self.net.parameters()[-2]
+            torch.nn.init.kaiming_normal_(weight[class_to_reset].unsqueeze(0))
         else:
             weight = self.net.parameters()[26]
-        #torch.nn.init.kaiming_normal_(weight[class_to_reset].unsqueeze(0))
-        torch.nn.init.normal_(weight[class_to_reset].unsqueeze(0))
+            torch.nn.init.normal_(weight[class_to_reset].unsqueeze(0))
+        # torch.nn.init.kaiming_normal_(weight[class_to_reset].unsqueeze(0))
+        # torch.nn.init.normal_(weight[class_to_reset].unsqueeze(0))
 
     def inner_update(self, x, fast_weights, y, bn_training):
         logits = self.net(x, fast_weights, bn_training=bn_training, meta_train=True, iterations=1)
@@ -47,7 +49,7 @@ class MetaLearingClassification(nn.Module):
             fast_weights = self.net.parameters()
 
         loss = F.cross_entropy(logits, y)
-        grad = torch.autograd.grad(loss, fast_weights, allow_unused=True)
+        grad = torch.autograd.grad(loss, fast_weights, allow_unused=False,  create_graph=True) # changed the allow_unused to False
 
         if isinstance(self.update_lr, list):
             fast_weights = list(map(lambda p: p[1] - p[2] * p[0] if p[1].learn and p[0] is not None else p[1], zip(grad, fast_weights, self.update_lr)))
@@ -87,7 +89,7 @@ class MetaLearingClassification(nn.Module):
                 if i == self.update_step:
                     break
 
-        x_rand, y_rand = iter(d_rand_iterator).next()
+        x_rand, y_rand = next(iter(d_rand_iterator))
         for it in d_traj_iterators:
             i = 0
             for batch_idx, (data, targets) in enumerate(it):

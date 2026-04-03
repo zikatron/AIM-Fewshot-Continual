@@ -55,6 +55,43 @@ class ModelFactory():
                     ('aim', [size_of_interpreter // 2, 128, 64, 128, size_of_interpreter // 2, 128]),
                     # [input_size, hidden_size, num_units, input_key_size, input_value_size, input_query_size]
                 ]
+            elif model_type == "ANML-second-order":
+                nm_channels = 112
+                channels = 256
+                size_of_representation = 2304
+                size_of_interpreter = 1008
+                return [
+                    # =============== Separate network neuromodulation =======================
+                    ('conv1_nm', [nm_channels, 3, 3, 3, 1, 0]),
+                    ('bn1_nm', [nm_channels]),
+                    ('conv2_nm', [nm_channels, nm_channels, 3, 3, 1, 0]),
+                    ('bn2_nm', [nm_channels]),
+                    ('conv3_nm', [nm_channels, nm_channels, 3, 3, 1, 0]),
+                    ('bn3_nm', [nm_channels]),
+                    ('nm_to_fc', [size_of_representation, size_of_interpreter]),
+                    # =============== Prediction network ===============================
+                    ('conv1', [channels, 3, 3, 3, 1, 0]),
+                    ('bn1', [channels]),
+                    ('conv2', [channels, channels, 3, 3, 1, 0]),
+                    ('bn2', [channels]),
+                    ('conv3', [channels, channels, 3, 3, 1, 0]),
+                    ('bn3', [channels]),
+                    ('fc', [1000, size_of_representation]),
+
+                ]
+            elif model_type == "OML-second-order":
+                return [
+                    # =============== slow weight =======================
+                    ('conv1', [channels, 3, 3, 3, 1, 0]),
+                    ('conv2', [channels, channels, 3, 3, 1, 0]),
+                    ('conv3', [channels, channels, 3, 3, 1, 0]),
+                    ('conv4', [channels, channels, 3, 3, 2, 0]),
+                    ('conv5', [channels, channels, 3, 3, 1, 0]),
+                    ('conv6', [channels, channels, 3, 3, 2, 0]),
+                    ('nm_to_fc', [1024, size_of_representation]), # following ANML exactly
+                    # =============== fast weight =======================
+                    ('fc', [1000, 1024]),
+                ]
         elif dataset == "cifar100":
             nm_channels = 112
             channels = 256
@@ -104,6 +141,41 @@ class ModelFactory():
                     ('aim', [size_of_interpreter // 2, 128, 64, 128, size_of_interpreter // 2, 128]),
                     # [input_size, hidden_size, num_units, input_key_size, input_value_size, input_query_size]
                 ]
+            elif model_type == "ANML-second-order":
+                size_of_representation = 4096
+                size_of_interpreter = 1792
+                return [
+                    # =============== slow weight =======================
+                    ('conv1_nm', [nm_channels, 3, 3, 3, 1, 0]),
+                    ('bn1_nm', [nm_channels]),
+                    ('conv2_nm', [nm_channels, nm_channels, 3, 3, 1, 0]),
+                    ('bn2_nm', [nm_channels]),
+                    ('conv3_nm', [nm_channels, nm_channels, 3, 3, 1, 0]),
+                    ('bn3_nm', [nm_channels]),
+                    ('nm_to_fc', [size_of_representation, size_of_interpreter]),
+                    # =============== fast weight =======================
+                    ('conv1', [channels, 3, 3, 3, 1, 0]),
+                    ('bn1', [channels]),
+                    ('conv2', [channels, channels, 3, 3, 1, 0]),
+                    ('bn2', [channels]),
+                    ('conv3', [channels, channels, 3, 3, 1, 0]),
+                    ('bn3', [channels]),
+                    ('fc', [100, size_of_representation]),
+                ]
+            elif model_type == "OML-second-order":
+                return [
+                    # =============== slow weight =======================
+                    ('conv1', [nm_channels, 3, 3, 3, 1, 0]),
+                    ('conv2', [nm_channels, nm_channels, 3, 3, 1, 0]),
+                    ('conv3', [nm_channels, nm_channels, 3, 3, 1, 0]),
+                    ('conv4', [nm_channels, nm_channels, 3, 3, 1, 0]),
+                    ('conv5', [nm_channels, nm_channels, 3, 3, 1, 0]),
+                    ('conv6', [nm_channels, nm_channels, 3, 3, 1, 0]),
+                    # =============== fast weight =======================
+                    ('nm_to_fc', [1024, size_of_representation]), # 1024 a dummy number
+                    ('fc', [100, 1024]),
+
+                ]
         elif dataset == "imagenet":
             nm_channels = 112
             channels = 256
@@ -151,6 +223,43 @@ class ModelFactory():
                     # =============== fast weight =======================
                     ('fc', [84, size_of_interpreter // 2]),
                     ('aim', [size_of_interpreter // 2, 128, 32, 128, size_of_interpreter // 2, 128]),
+                    # [input_size, hidden_size, num_units, input_key_size, input_value_size, input_query_size]
+                ]
+            elif model_type == "ANML-second-order":
+                size_of_representation = 16384
+                size_of_interpreter = 7168
+                return [
+                    # =============== slow weight =======================
+                    ('conv1_nm', [nm_channels, 3, 3, 3, 1, 0]),
+                    ('bn1_nm', [nm_channels]),
+                    ('conv2_nm', [nm_channels, nm_channels, 3, 3, 1, 0]),
+                    ('bn2_nm', [nm_channels]),
+                    ('conv3_nm', [nm_channels, nm_channels, 3, 3, 1, 0]),
+                    ('bn3_nm', [nm_channels]),
+                    ('nm_to_fc', [size_of_representation, size_of_interpreter]),
+                    # =============== fast weight =======================
+                    ('conv1', [channels, 3, 3, 3, 1, 0]),
+                    ('bn1', [channels]),
+                    ('conv2', [channels, channels, 3, 3, 1, 0]),
+                    ('bn2', [channels]),
+                    ('conv3', [channels, channels, 3, 3, 1, 0]),
+                    ('bn3', [channels]),
+                    ('fc', [84, size_of_representation]),
+
+                ]
+            elif model_type == "OML-second-order":
+                return [
+                    # =============== slow weight =======================
+                    ('conv1', [channels, 3, 3, 3, 1, 0]),
+                    ('conv2', [channels, channels, 3, 3, 1, 0]),
+                    ('conv3', [channels, channels, 3, 3, 1, 0]),
+                    ('conv4', [channels, channels, 3, 3, 1, 0]),
+                    ('conv5', [channels, channels, 3, 3, 1, 0]),
+                    ('conv6', [channels, channels, 3, 3, 1, 0]),
+                    # =============== fast weight =======================
+                    ('nm_to_fc', [1024, size_of_representation]), # 1024 a dummy number
+                    ('fc', [84, 1024]),
+
                     # [input_size, hidden_size, num_units, input_key_size, input_value_size, input_query_size]
                 ]
         else:

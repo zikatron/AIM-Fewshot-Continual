@@ -1,0 +1,13 @@
+# Ignore data folder
+/data/
+
+# Ignore meta_cl_methods virtual environment
+/meta_cl_methods/
+/.venv/
+/wandb/
+*pycache*
+*.net
+*.csv
+uv.lock
+hello.py
+.python-version
